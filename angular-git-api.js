@@ -62,7 +62,7 @@ angular.module('angular-git-api', [])
             '$http',
             function(getGitRepoContentList, $q, $http) {
                 function b64_to_utf8(str) {
-                    return decodeURIComponent(escape(window.atob(str)));
+                    return decodeURIComponent(escape(window.atob(str.replace(/\s/g, ''))));
                 }
                 return function(username, repo, path) {
                     if (!window.atob) {
@@ -73,25 +73,26 @@ angular.module('angular-git-api', [])
                     getGitRepoContentList(username, repo, path).then(function(repoFileList) {
                         var amount = 0, fileCache = {}, filesLoadet = 0;
                         for (var index in repoFileList) {
-                            if (repoFileList[index].type !== 'file') {//Remove Folder or not files from list
-                                repoFileList.splice(index, 1);
-                                continue;
+                            if (repoFileList[index].type === 'file') {//Remove Folder or not files from list
+                                amount++;
                             }
-                            amount++;
                         }
                         if (amount === 0) {
                             deferred.reject('no files');
                             return;
                         }
                         for (var index in repoFileList) {
-                            (function(repoFile, until) {
-                                $http.get(repoFile._links.git).success(function(loadetRepoFile) {
-                                    fileCache[repoFile.name] = b64_to_utf8(loadetRepoFile.content);
-                                    if (++filesLoadet === until) {
-                                        deferred.resolve(fileCache);
-                                    }
-                                });
-                            })(repoFileList[index], amount);
+                            if (repoFileList[index].type === 'file') {
+                                (function(repoFile, until) {
+                                    $http.get(repoFile._links.git).success(function(loadetRepoFile) {
+                                        fileCache[repoFile.name] = b64_to_utf8(loadetRepoFile.content);
+                                        if (++filesLoadet === until) {
+                                            deferred.resolve(fileCache);
+                                        }
+                                    });
+                                })(repoFileList[index], amount);
+
+                            }
                         }
                     });
                     return deferred.promise;
