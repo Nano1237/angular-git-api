@@ -5,19 +5,30 @@ angular.module('angular-git-api', [])
         .constant('angular-git-api.apiUrl', 'https://api.github.com/')
         /**
          * 
+         * @description Contains the Init-Data from the user
+         * @returns {_L141.Anonym$7}
+         */
+        .factory('angular-git-api.initData', function() {
+            return {};
+        })
+
+        /**
+         * 
          * @description Trys to get the public repositorys form a user and returns a deferrer promise
          * @param {String} url The Url of the github api service
          * @param {Object} $q The Service for Async Callbacks
          * @param {Object} $http The Service for Async requests
+         * @param {Object} initData The Information, received from the init method
          * @returns {Object}
          */
         .factory('angular-git-api.userRepos', [
             'angular-git-api.apiUrl',
             '$q',
             '$http',
-            function(url, $q, $http) {
+            'angular-git-api.initData',
+            function(url, $q, $http, initData) {
                 return function(user) {
-                    user = user || '';//@todo: init user nehmen
+                    user = user || initData.user;
                     var deferred = $q.defer();
                     $http.get(url + 'users/' + user + '/repos').success(deferred.resolve);
                     return deferred.promise;
@@ -120,11 +131,53 @@ angular.module('angular-git-api', [])
             'angular-git-api.api',
             'angular-git-api.getFilesInFolder',
             'angular-git-api.userRepos',
-            function(api, getGitFilesInFolder, getGitRepos) {
+            'angular-git-api.initData',
+            function(api, getGitFilesInFolder, getGitRepos, initData) {
                 return {
                     api: api,
                     getFilesInFolder: getGitFilesInFolder,
-                    getUserRepos: getGitRepos
+                    getUserRepos: getGitRepos,
+                    init: function(data) {
+                        for (var index in data) {
+                            initData[index] = data[index];
+                        }
+                    }
+                };
+            }
+        ])
+
+        /**
+         * 
+         * @description Interpolates the Github userdata received from the github api from the inituser or the user in the gitFlairUser Property
+         * @param {Function} api The Api Service
+         * @param {_L141.Anonym$7} initData The Initdata
+         * @param {Function} $interpolate
+         * @returns {_L155.Anonym$9}
+         */
+        .directive('gitFlair', [
+            'angular-git-api.api',
+            'angular-git-api.initData',
+            '$interpolate',
+            function(api, initData, $interpolate) {
+                return {
+                    compile: function(e, b) {
+                        var user = b.gitflairuser ? b.gitflairuser : initData.user;
+                        if (typeof user === 'undefined') {
+                            e.html('Error: no username!');
+                            return;
+                        }
+                        var oldContent = e.html();
+                        e.html('Loading Flair...');
+                        api('users/' + user).then(function(a) {
+                            var newContent = '';
+                            if (oldContent.length > 0) {
+                                newContent = $interpolate(oldContent)({gitFlair: a});
+                            } else {
+                                newContent = 'Error: no content!';
+                            }
+                            e.html(angular.element('<div>' + newContent + '</div>'));
+                        });
+                    }
                 };
             }
         ]);
