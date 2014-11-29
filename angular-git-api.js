@@ -116,7 +116,7 @@ angular.module('angular-git-api', [])
         ])
 
 
-        .factory('git_api', [
+        .factory('Git', [
             'angular-git-api.api',
             'angular-git-api.getFilesInFolder',
             'angular-git-api.userRepos',
