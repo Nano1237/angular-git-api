@@ -1,6 +1,6 @@
 # angular-git-api
 
-A Git Api Module, written as "plug and play" module
+A Git Api Module, written as "plug and play" module.
 
 ## DEMO
 
@@ -18,12 +18,13 @@ $ git clone https://github.com/Nano1237/angular-git-api.git
 ```
 3. Add the Module in your AngularJS app `"angular-git-api"`
 
-Now you can acces all Api Actions!
+Now you can access all Api Actions!
 
 ## Advanced help
 
 #### How to add the Module to my App?
 
+If this is the first module you are using, look at the example below.
 ```
 ...
 angular.module('myApp', [
@@ -49,7 +50,7 @@ Here you can find a list of possible Methods:
 .controller('DemoCtrl', [
     'Git', //Get the Git Service
     function(Git) {
-        //This example returns a list of files in a specific repository folder
+        //This example returns a list of files in this repository folder
         Git.api('repos/Nano1237/angular-git-api/contents/').then(function(a) {
             console.log('response: ', a);
         });
