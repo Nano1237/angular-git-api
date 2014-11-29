@@ -11,12 +11,13 @@ angular.module('angular-git-api', [])
          * @param {Object} $http The Service for Async requests
          * @returns {Object}
          */
-        .factory('getGitRepos', [
+        .factory('angular-git-api.userRepos', [
             'angular-git-api.apiUrl',
             '$q',
             '$http',
             function(url, $q, $http) {
                 return function(user) {
+                    user = user || '';//@todo: init user nehmen
                     var deferred = $q.defer();
                     $http.get(url + 'users/' + user + '/repos').success(deferred.resolve);
                     return deferred.promise;
@@ -31,7 +32,7 @@ angular.module('angular-git-api', [])
          * @param {Object} $http The Service for Async requests
          * @returns {Object}
          */
-        .factory('getGitRepoContentList', [
+        .factory('angular-git-api.getGitRepoContentList', [
             'angular-git-api.apiUrl',
             '$q',
             '$http',
@@ -56,8 +57,8 @@ angular.module('angular-git-api', [])
          * @param {Object} $http The Service for Async requests
          * @returns {Object}
          */
-        .factory('getGitFilesInFolder', [
-            'getGitRepoContentList',
+        .factory('angular-git-api.getFilesInFolder', [
+            'angular-git-api.getGitRepoContentList',
             '$q',
             '$http',
             function(getGitRepoContentList, $q, $http) {
@@ -96,6 +97,34 @@ angular.module('angular-git-api', [])
                         }
                     });
                     return deferred.promise;
+                };
+            }
+        ])
+
+
+        .factory('angular-git-api.api', [
+            '$q',
+            '$http',
+            'angular-git-api.apiUrl',
+            function($q, $http, url) {
+                return function(api_target, apiData) {
+                    var deferred = $q.defer();
+                    $http.get(url + api_target).success(deferred.resolve);
+                    return deferred.promise;
+                };
+            }
+        ])
+
+
+        .factory('git_api', [
+            'angular-git-api.api',
+            'angular-git-api.getFilesInFolder',
+            'angular-git-api.userRepos',
+            function(api, getGitFilesInFolder, getGitRepos) {
+                return {
+                    api: api,
+                    getFilesInFolder: getGitFilesInFolder,
+                    getUserRepos: getGitRepos
                 };
             }
         ]);
