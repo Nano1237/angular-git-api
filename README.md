@@ -13,7 +13,7 @@ A Git Api Module, written as "plug and play" module.
 $ git clone https://github.com/Nano1237/angular-git-api.git
 ```
 2. Include the Javascript file
-```
+```html
 <script src="{path-to-js-files}/angular-git-api.js"></script>
 ```
 3. Add the Module in your AngularJS app `"angular-git-api"`
@@ -25,7 +25,7 @@ Now you can access all Api Actions!
 #### How to add the Module to my App?
 
 If this is the first module you are using, look at the example below.
-```
+```javascript
 ...
 angular.module('myApp', [
     ...
@@ -39,14 +39,14 @@ angular.module('myApp', [
 
 Here you can find a list of possible Methods:
 
-* api(apiAddress[String], apiData[Object]) *makes a ajax call to //api.github.com/{apiAddress}?{apiData}*
-* getFilesInFolder(username[String], repo[String], path[String]) *makes an ajax call to //api.github.com/repos/{username}/{repo}/contents/{path} an returns a object with loadet files*
-* getUserRepos(userName[String]) *makes an ajax call to //api.github.com/users/{userName}/repos*
-* init(InitObject[Object]) *Overrides the params of the Init Object*
+* `api(apiAddress[String], apiData[Object])` *makes a ajax call to `//api.github.com/{apiAddress}?{apiData}`*
+* `getFilesInFolder(username[String], repo[String], path[String])` *makes an ajax call to `//api.github.com/repos/{username}/{repo}/contents/{path}` and returns a object with loadet files*
+* `getUserRepos(userName[String])` *makes an ajax call to `//api.github.com/users/{userName}/repos`*
+* `init(InitObject[Object])` *Overrides the params of the Init Object*
 
 #### How to make an Api call?
 
-```
+```javascript
 .controller('DemoCtrl', [
     'Git', //Get the Git Service
     function(Git) {
@@ -61,7 +61,7 @@ Here you can find a list of possible Methods:
 #### How to use the Flair directive?
 
 For more information about the users/:nickname api visit the [API Docs](https://developer.github.com/v3/users/)
-```
+```html
 <!-- 
     This Directive Interpolates the Githubs users/:nickname api repsonse into the directives content.
     You can find the Api repsonse inside of the gitFlair Object
